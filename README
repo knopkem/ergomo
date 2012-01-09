@@ -1,0 +1,41 @@
+This program retrieves your Ergomo bike computer's data and prints the data
+in csv format. 
+
+If you are looking a program to analyze your rides you might want to have
+a look at the ergoRacer software instead.
+See: http://www.mz-systems-gmbh.de/ergoRacer/index_en.html
+
+Many thanks to the Ergomo experts Siegfried Gerlitzki and Jürgen Moos for
+their incredbile and friendly support.
+
+
+
+How to use:
+
+1. Compile the program by typing make
+   BTW: You need libqt4-devel-4.7.1 and other development packages.
+
+2. Copy the file 99-usbtty.rules to /etc/udev/rules.d and replace
+   myusername by your username and users by your group.
+
+3. Connect your Ergomo using the serial usb cable
+
+4. Wake up your Ergomo
+
+5. Use this program:
+   Print ergomo's firmware version:
+   ./ergomo id
+
+   List table with all rides:
+   ./ergomo list
+
+   Show ride number 42 in csv format:
+   ./ergomo show 42
+ 
+   Set time and date of ergomo computer to current time:
+   ./ergomo settime
+
+   Erase ergomo's memory (it will delete all your stored rides!):
+   ./ergomo delete
+
+6. Enjoy, leave your desk and go cycling!
