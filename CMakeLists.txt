@@ -71,7 +71,7 @@ endif()
 
 # determine deployment system
 if(WIN32)
-  option(SHOW_CONSOLE "Show console at runtime (mainly for debugging)" "FALSE")
+  option(SHOW_CONSOLE "Show console at runtime (mainly for debugging)" "True")
   SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 ENDIF(WIN32)
