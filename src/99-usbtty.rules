@@ -1,0 +1,4 @@
+KERNEL!="ttyUSB*", GOTO="tty_end"
+ACTION=="remove", GOTO="tty_end"
+KERNEL=="ttyUSB*", ACTION=="add|change", MODE="0660", OWNER="myusername", GROUP="users"
+LABEL="tty_end"
