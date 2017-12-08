@@ -75,7 +75,7 @@ Serial::open(QString &err)
     // Linux and Mac OSX use stdio / termio / tcsetattr
     //
     assert(fd < 0);
-    fd = ::open(path.toAscii().constData(), O_RDWR | O_NOCTTY | O_NONBLOCK);
+    fd = ::open(path.toLatin1().constData(), O_RDWR | O_NOCTTY | O_NONBLOCK);
     if (fd < 0) {
         err = QString("open: ") + strerror(errno);
         return false;
@@ -127,7 +127,7 @@ Serial::open(QString &err)
     // then we need to open "\\.\COMX" not "COMX"
 	QString portSpec = "\\\\.\\" + path;
     wchar_t deviceFilenameW[32]; // \\.\COM32 needs 9 characters, 32 should be enough?
-    MultiByteToWideChar(CP_ACP, 0, portSpec.toLocal8Bit().constData(), -1, (LPWSTR)deviceFilenameW,
+    MultiByteToWideChar(CP_ACP, 0, portSpec.toLatin1().constData(), -1, (LPWSTR)deviceFilenameW,
                     sizeof(deviceFilenameW));
 
     // win32 commport API
