@@ -134,9 +134,15 @@ Serial::open(QString &err)
     fd = CreateFileW (deviceFilenameW, GENERIC_READ|GENERIC_WRITE,
         FILE_SHARE_DELETE|FILE_SHARE_WRITE|FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 
-    if (fd == INVALID_HANDLE_VALUE) return isOpen = false;
+    if (fd == INVALID_HANDLE_VALUE) {
+        err = "invalid handle value";
+        return isOpen = false;
+    }
 
-    if (GetCommState (fd, &deviceSettings) == false) return isOpen = false;
+    if (GetCommState(fd, &deviceSettings) == false) {
+        err = "failed getting com state";
+        return isOpen = false;
+    }
 
     // so we've opened the comm port lets set it up for
     // TODO: I guess these options need to be adapted for WINDOWS, see above (tty.c_cflag) !!!
@@ -153,6 +159,7 @@ Serial::open(QString &err)
 
 
     if (SetCommState(fd, &deviceSettings) == false) {
+        err = "failed setting com state";
         CloseHandle(fd);
         return isOpen = false;
     }
@@ -163,7 +170,7 @@ Serial::open(QString &err)
     timeouts.WriteTotalTimeoutConstant = 5000;
     timeouts.WriteTotalTimeoutMultiplier = 0;
     SetCommTimeouts(fd, &timeouts);
-
+    qDebug() << "serial port open";
     return isOpen = true;
 #endif
 }
@@ -262,9 +269,12 @@ Serial::read(void *buf, size_t nbyte, QString &err)
     //           which handles timeouts / ready read
     //
     DWORD cBytes;
-    int rc = ReadFile(fd, buf, nbyte, &cBytes, NULL);
-    if (rc) return (int)cBytes;
-    else return (-1);
+    BOOL rc = ReadFile(fd, buf, nbyte, &cBytes, NULL);
+    if (rc) {
+        return (int)cBytes;
+    }
+    err = "read failed";
+    return (-1);
 
 #endif
 }
@@ -302,13 +312,13 @@ Serial::write(void *buf, size_t nbyte, QString &err)
     // Windows use the writefile WIN32 API
     //
     DWORD cBytes;
-    int rc = WriteFile(fd, buf, nbyte, &cBytes, NULL);
-    if (!rc) {
-        err = QString("write: error %1").arg(rc);
-        return -1;
-    } else {
+    BOOL rc = WriteFile(fd, buf, nbyte, &cBytes, NULL);
+    if (rc) {
         return (int)cBytes; // how much was written?
     }
+    err = "write failed";
+    return -1;
+
 #endif
 }
 
@@ -361,7 +371,7 @@ find_devices(char *result[], int capacity)
         QString shortCOM = QString("COM%1").arg(i);
 	    QString longCOM = "\\\\.\\" + shortCOM;
         wchar_t deviceFilenameW[32];
-        MultiByteToWideChar(CP_ACP, 0, longCOM.toLocal8Bit().constData(), -1, (LPWSTR)deviceFilenameW,
+        MultiByteToWideChar(CP_ACP, 0, longCOM.toLatin1().constData(), -1, (LPWSTR)deviceFilenameW,
                         sizeof(deviceFilenameW));
 
         // Try to open the port

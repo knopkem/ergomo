@@ -20,9 +20,14 @@ Ergomo::Ergomo( QString device )
 {
     QString message;
 
+    QVector<CommPortPtr> ports = Serial::myListCommPorts(message);
+    foreach(const CommPortPtr& port, ports) {
+        qDebug() << "port available:" << port->name();
+    }
+
     if (! serial.open(message) )
     {
-        qDebug() << "Error: Cannot open serial port:" << message;
+        qWarning() << QString("Error: Cannot open serial port: %1, failure: %2").arg(device).arg(message);
     }
 }
 
@@ -40,7 +45,7 @@ QString Ergomo::csv(int nr)
 
 void Ergomo::log(QString line, bool fromErgomo)
 {
-//        qDebug() << (fromErgomo == true?"ergomo->pc:":"pc->ergomo:") << line;
+    qDebug() << (fromErgomo == true?"ergomo->pc:":"pc->ergomo:") << line;
 }
 
 void Ergomo::write( QString text )
@@ -99,7 +104,7 @@ bool Ergomo::connectionTest()
        }
     }
 
-    qDebug() << "ergomo does not respond!";
+    qWarning() << "ergomo does not respond!";
     return false;
 }
 

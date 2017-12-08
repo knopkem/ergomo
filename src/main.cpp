@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
     Ergomo ergomo(device);
 
-    if ( ! ergomo.connectionTest() ) 
+    if ( !ergomo.connectionTest() ) 
     {
         std::cerr << "no ergomo connected or ergomo is sleeping" << std::endl;
         exit(1);
